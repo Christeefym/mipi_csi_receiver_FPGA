@@ -12,7 +12,7 @@ wire reset_g;
 GSR GSR_INST (.GSR (reset_g));
 PUR PUR_INST (.PUR (reset_g)); 
 
-rx_lane_aligner ins1(	.clk_i(clk),
+mipi_rx_lane_aligner ins1(	.clk_i(clk),
 						.reset_i(reset),
 						.bytes_valid_i(bytes_valid),
 						.byte_i(bytes_i),

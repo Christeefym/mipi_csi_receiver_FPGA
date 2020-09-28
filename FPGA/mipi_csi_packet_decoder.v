@@ -27,7 +27,8 @@ module mipi_csi_packet_decoder(
 								output_valid_o,
 								data_o,
 								packet_length_o,
-								packet_type_o
+								packet_type_o,
+								debug_out
 								);
 								
 localparam [7:0]SYNC_BYTE = 8'hB8;
@@ -46,6 +47,8 @@ output reg [2:0]packet_type_o;
 reg [15:0]packet_length_reg;
 reg [31:0]data_reg;
 reg [31:0]last_data_i;
+output [7:0]debug_out;
+assign debug_out = data_reg[23:16];
 
 always @(negedge clk_i)
 begin

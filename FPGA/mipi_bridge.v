@@ -77,13 +77,17 @@ wire [31:0]mipi_data_raw;
 wire [31:0]byte_aligned;
 wire [31:0]lane_aligned;
 wire [31:0]decoded_data;
-wire [31:0]packet_length;
+wire [15:0]packet_length;
+wire [2:0]packet_type;
+
 wire [39:0]unpacked_data;
 wire [119:0]rgb_data;
 wire [63:0]yuv_data;
 
 wire byte_aligner_reset = mipi_data_lpn_in[0];
 assign reset = mipi_clk_n_lp | !reset_in;
+//assign debug_b8[7:0] = {mipi_byte_clock, is_yuv_valid, is_rgb_valid, is_unpacked_valid, is_decoded_valid, is_lane_aligned_valid, is_byte_valid[0]};
+assign debug_b8[7:0] = {is_byte_valid[2] ,byte_aligned[22:16]};
 
 mipi_rx_ddr mipi_rx_ddr_inst_0(	.alignwd(1'b0), 
 								.buf_clk_lp0i(mipi_clk_n_lp), 
@@ -112,7 +116,7 @@ mipi_rx_ddr mipi_rx_ddr_inst_0(	.alignwd(1'b0),
 								.datain(mipi_data_in), 
 								.q(mipi_data_raw));
 							  
-							  
+
 mipi_rx_byte_aligner mipi_rx_byte_aligner_0(	.clk_i(mipi_byte_clock),
 									.reset_i(byte_aligner_reset),
 									.byte_i(mipi_data_raw[7:0]),
@@ -138,26 +142,29 @@ mipi_rx_byte_aligner mipi_rx_byte_aligner_3(	.clk_i(mipi_byte_clock),
 									.byte_i(mipi_data_raw[31:24]),
 									.byte_o( byte_aligned[31:24]),
 									.byte_valid_o(is_byte_valid[3]));
-
-mipi_rx_lane_aligner mipi_rx_lane_aligner(	.clk_i(mipi_byte_clock),
+							  
+mipi_rx_lane_aligner mipi_rx_lane_aligner_0(	.clk_i(mipi_byte_clock),
 									.reset_i(reset),
 									.bytes_valid_i(is_byte_valid),
 									.byte_i(byte_aligned),
 									.lane_valid_o(is_lane_aligned_valid),
 									.lane_byte_o(lane_aligned));
 
-
+ 
 mipi_csi_packet_decoder mipi_csi_packet_decoder_0(	.clk_i(mipi_byte_clock),
 													.data_valid_i(is_lane_aligned_valid),
 													.data_i(lane_aligned),
 													.output_valid_o(is_decoded_valid),
 													.data_o(decoded_data),
-													.packet_length(packet_length));
+													.packet_length_o(packet_length),
+													.packet_type_o(packet_type)//,
+													//.debug_out(debug_b8)
+													);
 
-
-mipi_rx_raw10_depacker mipi_rx_raw10_depacker_0(.clk_i(mipi_byte_clock),
+mipi_rx_raw_depacker mipi_rx_raw_depacker_0(.clk_i(mipi_byte_clock),
 												.data_valid_i(is_decoded_valid),
 												.data_i(decoded_data),
+												.packet_type_i(packet_type),
 												.output_o(unpacked_data),
 												.output_valid_o(is_unpacked_valid));
 
@@ -168,8 +175,8 @@ debayer_filter debayer_filter_0(.clk_i(mipi_byte_clock),
 								.data_i(unpacked_data),
 								.data_valid_i(is_unpacked_valid),
 								.output_o(rgb_data),
-								.output_valid_o(is_rgb_valid),
-								.debug_out(debug_b8));
+								.output_valid_o(is_rgb_valid)
+								);
 
 rgb_to_yuv rgb_to_yuv_0(.clk_i(mipi_byte_clock),
 					    .reset_i(reset),
@@ -188,6 +195,7 @@ output_reformatter out_reformatter_0(.clk_i(mipi_byte_clock),
 
 
 
+//assign data_out = byte_aligned;
 assign pclk_out = reset? clk_i: mipi_out_clk ; //output clock always available, slow when there is no mipi frame , fast from mipi_clk when mipi_clock is active
 assign fsyn_out = !reset;					  //activate fsync as soon as mipi frame is active
 

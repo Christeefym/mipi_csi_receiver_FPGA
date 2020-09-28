@@ -8,8 +8,10 @@ module tb_mipi_csi_packet_decoder;
 	wire [31:0]bytes_o;
 	wire synced;
 	wire [31:0]packet_length;
+	wire [2:0]packet_type;
 	
 wire reset_g;
+
 GSR GSR_INST (.GSR (reset_g));
 PUR PUR_INST (.PUR (reset_g)); 
 
@@ -18,7 +20,8 @@ mipi_csi_packet_decoder dec1(.clk_i(clk),
 							 .data_i(bytes_i),
 							 .output_valid_o(synced),
 							 .data_o(bytes_o),
-							 .packet_length(packet_length));
+							 .packet_length_o(packet_length),
+							 .packet_type_o(packet_type));
 
 task sendbytes;
 	input [31:0]bytes;

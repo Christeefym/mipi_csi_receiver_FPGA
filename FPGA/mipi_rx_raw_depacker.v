@@ -11,9 +11,10 @@ work.  If not, see <http://creativecommons.org/licenses/by/3.0/>.
 */
 
 /*
-Receives 4 lane raw mipi bytes from packet decoder, rearrange bytes to output 4 pixel 10bit each 
-output is one clock cycle delayed, because the way , MIPI RAW10 is packed 
-output come in group of 5x40bit chunk on each clock cycle, output_valid_o remains active only while 20 pixel chunk is outputted 
+Receives 4 lane raw mipi bytes from packet decoder, rearrange bytes to output 4 pixel either 10bit each  or 12bit each
+output is one clock cycle delayed, because the way , MIPI RAW10 and RAW12 are packed 
+for raw10 output comes in group of 5x48bit chunks , output_valid_o remains active only while 20 pixel chunk is outputted
+for raw12 output comes in group of 2x48bit chunks 
 */
 
 module mipi_rx_raw_depacker(	clk_i,
@@ -23,10 +24,8 @@ module mipi_rx_raw_depacker(	clk_i,
 								output_valid_o,
 								output_o);
 
-localparam [2:0]TRANSFERS_PERCHUNK= 3'h5; // RAW 10 is packed <Sample0[9:2]> <Sample1[9:2]> <Sample2[9:2]> <Sample3[9:2]> <Sample0[1:0],Sample1[1:0],Sample2[1:0],Sample3[1:0]>
 localparam [7:0]MIPI_CSI_PACKET_10bRAW = 8'h2B;
 localparam [7:0]MIPI_CSI_PACKET_12bRAW = 8'h2C;
-localparam [7:0]MIPI_CSI_PACKET_14bRAW = 8'h2D;
 
 input clk_i;
 input data_valid_i;
@@ -75,48 +74,42 @@ wire [2:0]burst_length;
 wire [1:0]idle_length;
 wire [127:0]word;
 
-reg [63:0]output_10b;
-reg [63:0]output_12b;
-reg [63:0]output_14b;
+reg [47:0]output_10b;
+reg [47:0]output_12b;
+
 reg output_valid_reg;
 reg output_valid_reg_2;
 
 assign word = {last_data_i[0], last_data_i[1], last_data_i[2],last_data_i[3]}; //would need last bytes as well as current data to get full 4 pixel
 
-assign offset_factor = (packet_type_i == (MIPI_CSI_PACKET_10bRAW & 8'h07))? 8'd8: (packet_type_i == (MIPI_CSI_PACKET_12bRAW & 8'h07))? 8'd16:8'd24;
+assign offset_factor = (packet_type_i == (MIPI_CSI_PACKET_10bRAW & 8'h07))? 8'd8 : 8'd16;
 					   
-assign burst_length =  ((packet_type_i == (MIPI_CSI_PACKET_10bRAW & 8'h07)) || (packet_type_i == (MIPI_CSI_PACKET_14bRAW & 8'h07)))? 8'd5:8'd3;		   
+assign burst_length =  (packet_type_i == (MIPI_CSI_PACKET_10bRAW & 8'h07))? 8'd5: 8'd3;		   
 						
-assign idle_length =  ((packet_type_i == (MIPI_CSI_PACKET_10bRAW & 8'h07)) || (packet_type_i == (MIPI_CSI_PACKET_12bRAW & 8'h07)))? 2'd1: 2'd3;
+assign idle_length = 2'd1;
 
 reg [15:0]pixel_counter_depacker;
 
 always @(posedge clk_i)
 begin
-	output_10b[63:48] <= 	{word [(offset_71) -:8], 	word [(offset_97) -:2]} << 6; 		//lane 1 	TODO:Reverify 
-	output_10b[47:32] <= 	{word [(offset_79) -:8], 	word [(offset_99) -:2]} << 6;		
-	output_10b[31:16] <= 	{word [(offset_87) -:8], 	word [(offset_101) -:2]} << 6;
-	output_10b[15:0]  <= 	{word [(offset_95) -:8], 	word [(offset_103) -:2]} << 6;		//lane 4
-	output_12b[63:48] <= 	{word [(offset_71) -:8], 	word [(offset_83) -:4]} << 4; 		//lane 1
-	output_12b[47:32] <= 	{word [(offset_79) -:8], 	word [(offset_87) -:4]} << 4;
-	output_12b[31:16] <= 	{word [(offset_95) -:8], 	word [(offset_107) -:4]} << 4;
-	output_12b[15:0]  <= 	{word [(offset_103) -:8], 	word [(offset_111) -:4]} << 4;		//lane 4
-	output_14b[63:48] <= 	{word [offset_7 -:8], 	word [(offset_37) -:6]} << 2; 		//lane 1
-	output_14b[47:32] <= 	{word [offset_15 -:8], 	word [(offset_43) -:6]} << 2;
-	output_14b[31:16] <= 	{word [offset_23 -:8], 	word [(offset_49) -:6]} << 2;
-	output_14b[15:0]  <= 	{word [offset_31 -:8], 	word [(offset_55) -:6]} << 2;		//lane 4
+	output_10b[47:36] <= 	{word [(offset_71) -:8], 	word [(offset_97) -:2]} << 6; 		//lane 1 	TODO:Reverify 
+	output_10b[35:24] <= 	{word [(offset_79) -:8], 	word [(offset_99) -:2]} << 6;		
+	output_10b[23:12] <= 	{word [(offset_87) -:8], 	word [(offset_101) -:2]} << 6;
+	output_10b[11:0]  <= 	{word [(offset_95) -:8], 	word [(offset_103) -:2]} << 6;		//lane 4
+	
+	output_12b[47:36] <= 	{word [(offset_71) -:8], 	word [(offset_83) -:4]} << 4; 		//lane 1
+	output_12b[35:24] <= 	{word [(offset_79) -:8], 	word [(offset_87) -:4]} << 4;
+	output_12b[23:12] <= 	{word [(offset_95) -:8], 	word [(offset_107) -:4]} << 4;
+	output_12b[11:0]  <= 	{word [(offset_103) -:8], 	word [(offset_111) -:4]} << 4;		//lane 4
+	
 	
 	if (packet_type_reg == (MIPI_CSI_PACKET_10bRAW & 8'h07))
 	begin
 		output_o <= output_10b;
 	end
-	else if (packet_type_reg == (MIPI_CSI_PACKET_12bRAW & 8'h07))
+	else //or 12bRAW
 	begin		
 		output_o <= output_12b;
-	end
-	else // if (packet_type_i == (MIPI_CSI_PACKET_14bRAW & 8'h07))
-	begin
-		output_o <= output_14b;
 	end
 	
 end
@@ -125,8 +118,7 @@ end
 always @(posedge clk_i)
 begin
 	
-		output_valid_reg_2 <= output_valid_reg;
-		output_valid_o <= output_valid_reg_2;
+
 		
 		if (output_valid_reg)
 		begin
@@ -221,16 +213,10 @@ begin
 		last_data_i[3] <= 32'h0;
 
 		
-		byte_count <= burst_length;
+		byte_count <= 3'b0; 
 
-		if (packet_type_i == (MIPI_CSI_PACKET_14bRAW & 8'h07))		// for 14bit need to wait for 3 sample while 12bit and 10bit only need 1 sample delay
-		begin
-			idle_count <= 3'd2;
-		end
-		else
-		begin 
-			idle_count <= 3'b0;	//need to be zero to wait for 1 sample after data become valid	
-		end
+		idle_count <= 3'b0;	//need to be zero to wait for 1 sample after data become valid	
+
 		
 		output_valid_reg <= 1'h0;
 		offset_factor_reg <= offset_factor;
@@ -243,6 +229,9 @@ end
 always @(posedge clk_i)
 begin
 		data_valid_reg <= data_valid_i;
+		output_valid_reg_2 <= output_valid_reg;
+		output_valid_o <= output_valid_reg_2;
+		
 		data_reg <= data_i;
 
 end
