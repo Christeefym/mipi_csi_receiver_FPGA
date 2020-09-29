@@ -35,7 +35,7 @@ localparam [7:0]SYNC_BYTE = 8'hB8;
 localparam [3:0]LANES = 3'h4;
 localparam [7:0]MIPI_CSI_PACKET_10bRAW = 8'h2B;
 localparam [7:0]MIPI_CSI_PACKET_12bRAW = 8'h2C;
-localparam [7:0]MIPI_CSI_PACKET_14bRAW = 8'h2D;
+
 input clk_i;
 input data_valid_i;
 input [31:0]data_i;
@@ -48,7 +48,7 @@ reg [15:0]packet_length_reg;
 reg [31:0]data_reg;
 reg [31:0]last_data_i;
 output [7:0]debug_out;
-assign debug_out = data_reg[23:16];
+assign debug_out = packet_length_o[7:0];
 
 always @(negedge clk_i)
 begin
@@ -61,7 +61,7 @@ begin
 		begin
 			packet_length_reg <= packet_length_reg - LANES;
 		end
-		else if (last_data_i[7:0] == SYNC_BYTE && (data_reg[7:0] == MIPI_CSI_PACKET_10bRAW || data_reg[7:0] == MIPI_CSI_PACKET_12bRAW || data_reg[7:0] == MIPI_CSI_PACKET_14bRAW))
+		else if (last_data_i[7:0] == SYNC_BYTE && (data_reg[7:0] == MIPI_CSI_PACKET_10bRAW || data_reg[7:0] == MIPI_CSI_PACKET_12bRAW))
 		begin
 			//TODO: better timings could be achieved by just copy whole data_reg into a reg and later take individual values from that reg
 			packet_type_o <= data_reg[2:0];

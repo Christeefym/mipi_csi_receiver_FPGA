@@ -124,7 +124,8 @@ begin
 	end
 	else
 	begin
-		lane_valid_reg <=( &valid)? 1'h1:(lane_valid_o && |valid)? 1'h1 : 1'h0; //one clock delay to the last packet
+		lane_valid_reg <=( &valid)? 1'h1:(lane_valid_o && |valid)? 1'h1 : 1'h0; // if all of lines are valid then set output valid high , 
+																				  // if one of them invalid check if previously valid and //one clock delay to the last packet
 		lane_valid_o <= lane_valid_reg;
 		if (!lane_valid_reg)
 		begin

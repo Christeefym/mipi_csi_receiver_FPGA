@@ -99,6 +99,40 @@ initial begin
 		bytes_valid[0] = 1'h0;
 		
 
+
+
+
+		sendbytes(32'h00000000);
+		sendbytes(32'h00000000);
+		sendbytes(32'h00000000);
+		sendbytes(32'h00000000);
+		sendbytes(32'h00000000);
+		bytes_valid[0] = 1'h1;
+		bytes_valid[1] = 1'h1;
+		bytes_valid[2] = 1'h1;
+		bytes_valid[3] = 1'h1;
+		sendbytes(32'hB8B8B8B8);
+		sendbytes(32'h11111111);
+		sendbytes(32'h22222222);
+		sendbytes(32'h33333333);
+		sendbytes(32'h44444444);
+		sendbytes(32'h55555555);
+		sendbytes(32'h66666666);
+		sendbytes(32'h77777777);
+		sendbytes(32'h88888888);
+		sendbytes(32'h99999999);
+		sendbytes(32'hAAAAAAAA);
+		bytes_valid[0] = 1'h0;
+		bytes_valid[1] = 1'h0;
+		bytes_valid[2] = 1'h0;
+		bytes_valid[3] = 1'h0;
+		sendbytes(32'h00000000);
+		sendbytes(32'h00000000);
+		sendbytes(32'h00000000);
+		sendbytes(32'h00000000);
+		sendbytes(32'h00000000);
+		sendbytes(32'h00000000);
+		
 end
 
 endmodule
