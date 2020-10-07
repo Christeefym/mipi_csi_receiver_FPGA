@@ -22,7 +22,7 @@ module rgb_to_yuv(clk_i, //data changes on rising edge , latched in on falling e
 				  yuv_o,
 				  yuv_valid_o);
 				  
-localparam PIXEL_DEPTH = 4'd10; //10bit per color				  
+localparam PIXEL_DEPTH = 4'd12; //10bit per color				  
 localparam PIXEL_PER_CLK = 4'd4;  //4pixels per clock cycle comes , should be even
 input clk_i;
 input reset_i;
@@ -44,22 +44,22 @@ reg [7:0]V[3:0];
 
 reg [23:0]not_used24; //to suppress warning from the tool 
 
-always @(negedge  clk_i)
+always @(negedge  clk_i) 
 begin
 	yuv_valid_o <= rgb_valid_i; 
 	
-	{not_used24,Y[0]} =  (( 77 * rgb_i[110 +: 10]) + (150 * rgb_i[100 +: 10]) + (29 * rgb_i[90  +: 10]) + 18'd128) >> 10;
-	{not_used24,U[0]} = (((127 * rgb_i[90  +: 10]) - (43  * rgb_i[110 +: 10]) - (84 * rgb_i[100 +: 10]) + 18'd128) >> 10 ) + 32'd128;
-	{not_used24,V[0]} = (((127 * rgb_i[110 +: 10]) - (106 * rgb_i[100 +: 10]) - (21 * rgb_i[90  +: 10]) + 18'd128) >> 10 ) + 32'd128;
+	{not_used24,Y[0]} =  (( 77 * rgb_i[132 +: 12]) + (150 * rgb_i[120 +: 12]) + (29 * rgb_i[108  +: 12]) + 18'd128) >> 12;
+	{not_used24,U[0]} = (((127 * rgb_i[108  +: 12]) - (43  * rgb_i[132 +: 12]) - (84 * rgb_i[120 +: 12]) + 18'd128) >> 12 ) + 32'd128;
+	{not_used24,V[0]} = (((127 * rgb_i[132 +: 12]) - (106 * rgb_i[120 +: 12]) - (21 * rgb_i[108  +: 12]) + 18'd128) >> 12 ) + 32'd128;
 	
-	{not_used24,Y[1]} =  (( 77 * rgb_i[80  +: 10]) + (150 * rgb_i[70  +: 10]) + (29 * rgb_i[60  +: 10]) + 18'd128) >> 10;
+	{not_used24,Y[1]} =  (( 77 * rgb_i[96  +: 12]) + (150 * rgb_i[84  +: 12]) + (29 * rgb_i[72  +: 12]) + 18'd128) >> 12;
 	//U[1] and V[1]  not need to yuv422 sub sampling
 	
-	{not_used24,Y[2]} =  (( 77 * rgb_i[50 +: 10]) + (150 * rgb_i[40 +: 10]) + (29 * rgb_i[30 +: 10]) + 18'd128) >> 10;
-	{not_used24,U[2]} = (((127 * rgb_i[30 +: 10]) - ( 43 * rgb_i[50 +: 10]) - (84 * rgb_i[40 +: 10]) + 18'd128) >> 10 ) + 32'd128;
-	{not_used24,V[2]} = (((127 * rgb_i[50 +: 10]) - (106 * rgb_i[40 +: 10]) - (21 * rgb_i[30 +: 10]) + 18'd128) >> 10 ) + 32'd128;
+	{not_used24,Y[2]} =  (( 77 * rgb_i[60 +: 12]) + (150 * rgb_i[48 +: 12]) + (29 * rgb_i[36 +: 12]) + 18'd128) >> 12;
+	{not_used24,U[2]} = (((127 * rgb_i[36 +: 12]) - ( 43 * rgb_i[60 +: 12]) - (84 * rgb_i[48 +: 12]) + 18'd128) >> 12 ) + 32'd128;
+	{not_used24,V[2]} = (((127 * rgb_i[60 +: 12]) - (106 * rgb_i[48 +: 12]) - (21 * rgb_i[36 +: 12]) + 18'd128) >> 12 ) + 32'd128;
 	
-	{not_used24,Y[3]} =  (( 77 * rgb_i[20 +: 10]) + (150 * rgb_i[10 +: 10]) + (29 * rgb_i[0 +: 10])  + 18'd128) >> 10;
+	{not_used24,Y[3]} =  (( 77 * rgb_i[24 +: 12]) + (150 * rgb_i[12 +: 12]) + (29 * rgb_i[0 +: 12])  + 18'd128) >> 12;
 	//U[3] and V[3]  not need to yuv422 sub sampling
 
 	yuv_o <= { Y[0], U[0], Y[1], V[0],		Y[2], U[2], Y[3], V[2]};
