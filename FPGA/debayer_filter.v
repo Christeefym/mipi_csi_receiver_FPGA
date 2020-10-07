@@ -15,7 +15,7 @@ Takes 4x10bit pixel from RAW10 depacker module @mipi byte clock output 4x24bit R
 Implement Basic Debayer filter, As debayer need pixel infrom neighboring pixel which may be on next or previous display line,
 so input data is written onto RAM, only 4 lines are stored in RAM at one time and only three of the readable at any give time , RAM to which data is written to can not be read. 
 as we have enough info in RAM,4 10bit pixel will be coverted to 4x24bit RGB output
-First line is expected to RGRG , second line GBGB
+First line is expected to BGBG... , second line GRGR
 */
 
 module debayer_filter(clk_i,
@@ -42,7 +42,7 @@ output reg [(OUTPUT_WIDTH-1):0]output_o;
 
 
 
-reg [1:0]line_counter; //counts lines of the frame , needed determine if have enough data ins line rams to start outputting RGB data
+reg [1:0]line_counter; //counts lines of the frame , needed determine if have enough data in line rams to start outputting RGB data
 reg data_valid_reg;
 
 reg [(PIXEL_WIDTH - 1):0]R1[3:0];
@@ -411,19 +411,22 @@ begin
 				end
 			end 	//end even rows
 			else
-			begin	//odd rows  //First line 
+			begin	//odd rows   
 				
 			for (i=3'b0; i < 4 ;i = i + 1)
 				begin
 					R1[i] <= R1_odd[i];
 					G1[i] <= G1_odd[i];
 					B1[i] <= B1_odd[i];
+					
 					R2[i] <= R2_odd[i];
 					G2[i] <= G2_odd[i];
 					B2[i] <= B2_odd[i];
+					
 					R3[i] <= R3_odd[i];
 					G3[i] <= G3_odd[i];
-					B3[i] <= B3_odd[i];				
+					B3[i] <= B3_odd[i];
+					
 					R4[i] <= R4_odd[i];
 					G4[i] <= G4_odd[i];
 					B4[i] <= B4_odd[i];
