@@ -26,7 +26,6 @@ module mipi_csi_packet_decoder(
 								data_i,
 								output_valid_o,
 								data_o,
-								packet_length_o,
 								packet_type_o,
 								debug_out
 								);
@@ -41,21 +40,18 @@ input data_valid_i;
 input [31:0]data_i;
 output reg output_valid_o;
 output reg [31:0]data_o;
-output reg [15:0]packet_length_o;
 output reg [2:0]packet_type_o;
 
 reg [15:0]packet_length_reg;
 reg [31:0]data_reg;
 reg [31:0]last_data_i;
 output [7:0]debug_out;
-assign debug_out = packet_length_o[7:0];
 
-always @(negedge clk_i)
+always @(posedge clk_i)
 begin
 	if (data_valid_i)
 	begin
-		last_data_i <= data_reg;
-		output_valid_o <= |packet_length_reg;
+		//output_valid_o <= |packet_length_reg;
 
 		if (|packet_length_reg)
 		begin
@@ -65,30 +61,30 @@ begin
 		begin
 			//TODO: better timings could be achieved by just copy whole data_reg into a reg and later take individual values from that reg
 			packet_type_o <= data_reg[2:0];
-			packet_length_o <= {data_reg[23:16], data_reg[15:8]};
 			packet_length_reg <= {data_reg[23:16], data_reg[15:8]};
+			output_valid_o <= 1'b1;
 		end
 		else
 		begin
 			packet_length_reg <= 32'h0;
 			packet_type_o <= 3'h0;
-			packet_length_o <= 32'h0;
+			output_valid_o <= 1'b0;
 		end
 		
 	end
 	else 
 	begin
 		packet_type_o <= 3'h0;
-		last_data_i <=32'h0;
-		packet_length_o <= 32'h0;
 		packet_length_reg <= 32'h0;
 		output_valid_o <= 1'h0;
 	end
 end
 
-always @(negedge clk_i)
+always @(posedge clk_i)
 begin
+
 		data_reg <= data_i;
+		last_data_i <= data_reg;
 		data_o <= data_reg;
 end
 
