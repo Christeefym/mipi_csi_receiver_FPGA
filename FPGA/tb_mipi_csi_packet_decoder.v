@@ -20,7 +20,6 @@ mipi_csi_packet_decoder dec1(.clk_i(clk),
 							 .data_i(bytes_i),
 							 .output_valid_o(synced),
 							 .data_o(bytes_o),
-							 .packet_length_o(packet_length),
 							 .packet_type_o(packet_type));
 
 task sendbytes;
