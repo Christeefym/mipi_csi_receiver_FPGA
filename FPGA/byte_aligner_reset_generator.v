@@ -21,7 +21,7 @@ begin
 	begin
 		clk_count <= clk_count + 1'b1;
 		
-		if (clk_count == 4'd2)
+		if (clk_count == 4'd4)
 		begin
 			aligner_reset_o <= 1'b0;
 		end

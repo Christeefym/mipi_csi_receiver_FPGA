@@ -54,7 +54,7 @@ begin
 		valid_reg <= 1'b0;
 		last_byte <= 8'h0;
 		offset <= 3'h0;
-		output_reg <= SYNC_BYTE; //first byte output is always sync byte once byte_valid_o is high
+		output_reg <= 8'h0; 
 	end
 	else
 	begin
@@ -62,20 +62,21 @@ begin
 		last_byte <= byte_i;
 
 		
-		if (!valid_reg) 
+		if (valid_reg) 
 		begin
-		 for (i= 8'h0; i < 8; i = i + 1'h1) //need to have loop 8 time not 9 because if input bytes are already aligned they will fall on last_byte or byte_i
+			output_reg <= word[offset +:8]; // from offset 8bits upwards
+		end
+		else
+		begin
+			for (i= 8'h1; i < 9; i = i + 1'h1) //need to have loop 8 time not 9 because if input bytes are already aligned they will fall on last_byte or byte_i
 			begin
 				if ((word[(i ) +: 8] == SYNC_BYTE))
 					begin
 						valid_reg <= 1'b1;
 						offset  <= i[2:0];
+						output_reg <= SYNC_BYTE; //first byte output is always sync byte once byte_valid_o is high
 					end
 			end
-		end
-		else
-		begin
-			output_reg <= word[offset +:8]; // from offset 8bits upwards
 		end
 	end
 	
@@ -84,18 +85,17 @@ end
 
 always @(negedge clk_i )
 begin
-//	if (reset_i)
-//	begin
-//		byte_o <= 8'h0;
-//		byte_valid_o <= 1'b0;
-//		valid_reg_stage2 <= 1'b0;
-//	end
-//	else
-//	begin
+	//if (reset_i)
+	//begin
+	//	byte_o <= 8'h0;
+	//	byte_valid_o <= 1'b0;
+	//end
+	//else
+	//begin
 		byte_o <= output_reg;
 
 		byte_valid_o <= valid_reg ;
-//	end
+	//end
 end
 endmodule
 						
