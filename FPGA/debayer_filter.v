@@ -16,7 +16,7 @@ Implement Basic Debayer filter, As debayer need pixel infrom neighboring pixel w
 so input data is written onto RAM, only 4 lines are stored in RAM at one time and only three of the readable at any give time , RAM to which data is written to can not be read. 
 as we have enough info in RAM,4 10bit pixel will be coverted to 4x24bit RGB output
 First line is expected to BGBG... , second line GRGR
-*/
+*/ 
 
 module debayer_filter(clk_i,
 					  reset_i,
@@ -391,7 +391,7 @@ begin
 				R4_odd[3] = last_ram_outputs[ read_ram_index_odd_plus_1 ][ 11:0 ]; 
 				
 				
-		if (!line_counter[0])	//even
+		if (line_counter[0])	//even
 			begin
 				for (i=3'b0; i < 4 ;i = i + 1)
 				begin

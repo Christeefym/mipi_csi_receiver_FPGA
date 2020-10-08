@@ -86,8 +86,11 @@ wire [63:0]yuv_data;
 wire aligner_reset = mipi_data_lpn_in[0];
 wire byte_aligner_reset;
 assign reset = mipi_clk_n_lp | !reset_in;
-assign debug_b8[7:0] = {mipi_out_clk, 1'b0, 1'b0, is_decoded_valid, is_lane_aligned_valid, is_byte_valid[2], is_byte_valid[0],byte_aligner_reset}; //mipi_out_clk&is_yuv_valid
-//assign debug_b8[7:0] = {is_byte_valid[2] , byte_aligner_reset, byte_aligned[21:16]};
+
+
+assign debug_b8[7:0] = {byte_aligner_reset, 1'b0, 1'b0, is_byte_valid[0], is_lane_aligned_valid, byte_aligned[23:16] == 8'hb8, byte_aligned[15:8] == 8'hb8,byte_aligned[7:0] == 8'hb8}; //mipi_out_clk&is_yuv_valid
+//assign debug_b8[7:0] = {debug_wire[7:1],is_decoded_valid};
+//wire [7:0]debug_wire;
 
 mipi_rx_ddr mipi_rx_ddr_inst_0(	.alignwd(1'b0), 
 								.buf_clk_lp0i(mipi_clk_n_lp), 
@@ -159,7 +162,7 @@ mipi_csi_packet_decoder mipi_csi_packet_decoder_0(	.clk_i(mipi_byte_clock),
 													.output_valid_o(is_decoded_valid),
 													.data_o(decoded_data),
 													.packet_type_o(packet_type)//,
-													//.debug_out(debug_b8)
+													//.debug_out(debug_wire)
 													);
 
 mipi_rx_raw_depacker mipi_rx_raw_depacker_0(.clk_i(mipi_byte_clock),
