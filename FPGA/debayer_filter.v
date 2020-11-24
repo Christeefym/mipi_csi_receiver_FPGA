@@ -42,7 +42,7 @@ output reg [(OUTPUT_WIDTH-1):0]output_o;
 
 
 
-reg [1:0]line_counter; //counts lines of the frame , needed determine if have enough data in line rams to start outputting RGB data
+reg line_counter; //counts lines of the frame , needed determine if have enough data in line rams to start outputting RGB data
 reg data_valid_reg;
 
 reg [(PIXEL_WIDTH - 1):0]R1[3:0];
@@ -195,7 +195,7 @@ begin
 	if (reset_i)
 	begin
 		write_ram_select <= 4'b1000;
-		line_counter <= 2'b0;
+		line_counter <= 1'b0;
 		read_ram_index_odd <= 2'b01;
 		read_ram_index_even <= 2'b01;
 		read_ram_index_odd_plus_1 <= 2'd2;
@@ -214,11 +214,8 @@ begin
 		read_ram_index_odd_minus_1 <= read_ram_index_odd_minus_1 + 1'b1;
 		read_ram_index_even_plus_1 <= read_ram_index_even_plus_1 + 1'b1;
 		read_ram_index_even_minus_1 <= read_ram_index_even_minus_1 + 1'b1;
-		
-		if (line_counter < 2'd3)
-		begin
-			line_counter <= line_counter + 1'b1;
-		end
+	
+		line_counter <= !line_counter;
 	end
 end
 
@@ -250,13 +247,8 @@ begin
 	end
 	else
 	begin
-		if(line_counter > 9'd2)
-		begin
 			data_valid_reg <= data_valid_i; 
 			output_valid_o <= data_valid_reg;
-		end
-
-
 	end
 end
 
@@ -391,7 +383,7 @@ begin
 				R4_odd[3] = last_ram_outputs[ read_ram_index_odd_plus_1 ][ 11:0 ]; 
 				
 				
-		if (line_counter[0])	//even
+		if (line_counter)	//even
 			begin
 				for (i=3'b0; i < 4 ;i = i + 1)
 				begin
