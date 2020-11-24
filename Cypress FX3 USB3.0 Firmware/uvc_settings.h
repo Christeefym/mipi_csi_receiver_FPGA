@@ -33,13 +33,13 @@
 
 //640x480 supports 30 and 200FPS
 #define UVC_WIDTH_640								(unsigned int)640
-#define UVC_HEIGHT_126								(unsigned int)126
+#define UVC_HEIGHT_126								(unsigned int)128
 #define MIN_BIT_RATE_640x126						(unsigned long)(UVC_WIDTH_640*UVC_HEIGHT_126*16*CAM_FPS_682) //YUY2 4byte per 2 pixel
 #define MAX_BIT_RATE_640x126						(unsigned long)(UVC_WIDTH_640*UVC_HEIGHT_126*16*CAM_FPS_682)
 #define MAX_FRAME_SIZE_640x126						(unsigned long)(UVC_WIDTH_640*UVC_HEIGHT_126*2)//YUY2 4byte per 2 pixel
 
 #define UVC_WIDTH_640								(unsigned int)640
-#define UVC_HEIGHT_78								(unsigned int)78
+#define UVC_HEIGHT_78								(unsigned int)80
 #define MIN_BIT_RATE_640x78							(unsigned long)(UVC_WIDTH_640*UVC_HEIGHT_78*16*CAM_FPS_1000) //YUY2 4byte per 2 pixel
 #define MAX_BIT_RATE_640x78							(unsigned long)(UVC_WIDTH_640*UVC_HEIGHT_78*16*CAM_FPS_1000)
 #define MAX_FRAME_SIZE_640x78						(unsigned long)(UVC_WIDTH_640*UVC_HEIGHT_78*2)//YUY2 4byte per 2 pixel
@@ -63,7 +63,7 @@
 #define MAX_FRAME_SIZE_1920x1080					(unsigned long)(UVC_WIDTH_1920*UVC_HEIGHT_1080*2)
 
 #define UVC_WIDTH_3280								(unsigned int)3280
-#define UVC_HEIGHT_2462								(unsigned int)2462
+#define UVC_HEIGHT_2462								(unsigned int)2464
 #define MIN_BIT_RATE_3280x2462						(unsigned long)(UVC_WIDTH_3280*UVC_HEIGHT_2462*16*CAM_FPS_15)
 #define MAX_BIT_RATE_3280x2462						(unsigned long)(UVC_WIDTH_3280*UVC_HEIGHT_2462*16*CAM_FPS_15)
 #define MAX_FRAME_SIZE_3280x2462					(unsigned long)(UVC_WIDTH_3280*UVC_HEIGHT_2462*2)

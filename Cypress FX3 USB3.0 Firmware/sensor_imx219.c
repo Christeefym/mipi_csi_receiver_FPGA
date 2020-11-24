@@ -105,7 +105,7 @@ static image_sensor_config_t sensor_config = {
 		.endx = 2280,
 		.endy = 1715,		//this has to odd or bayer oder will change
 		.width = 640,
-		.height = 482,	//each frame will have two extra line to compensate for debayer crop
+		.height = 480,	
 		.binning = 2,
 		.test_pattern = 0
 	},
@@ -121,7 +121,7 @@ static image_sensor_config_t sensor_config = {
 		.endx = 2280,
 		.endy = 1715,
 		.width = 640,
-		.height = 482,
+		.height = 480,
 		.binning = 2,
 		.test_pattern = 0
 	},
@@ -138,7 +138,7 @@ static image_sensor_config_t sensor_config = {
 		.endx = 0xA27,
 		.endy = 0x6EB,
 		.width = 1280,
-		.height = 722,
+		.height = 720,
 		.binning = 0,
 		.test_pattern = 0
 	},
@@ -154,7 +154,7 @@ static image_sensor_config_t sensor_config = {
 		.endx = 0xA27,
 		.endy = 0x6EB,
 		.width = 1280,
-		.height = 722,
+		.height = 720,
 		.binning = 0,
 		.test_pattern = 0
 	},
@@ -170,7 +170,7 @@ static image_sensor_config_t sensor_config = {
 		.endx = 0xA27,
 		.endy = 0x6EB,
 		.width = 1280,
-		.height = 722,
+		.height = 720,
 		.binning = 0,
 		.test_pattern = 0
 	},
@@ -186,7 +186,7 @@ static image_sensor_config_t sensor_config = {
 		.endx = 0xA27,
 		.endy = 0x6EB,
 		.width = 1920,
-		.height = 1082,
+		.height = 1080,
 		.binning = 0,
 		.test_pattern = 0
 	},
@@ -202,7 +202,7 @@ static image_sensor_config_t sensor_config = {
 		.endx = 0xA27,
 		.endy = 0x6EB,
 		.width = 1920,
-		.height = 1082,
+		.height = 1080,
 		.binning = 0,
 		.test_pattern = 0
 	},
